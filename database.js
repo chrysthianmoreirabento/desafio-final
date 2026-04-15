@@ -39,14 +39,14 @@ const criarBanco = async () => {
                 ("paroquia São João Batista", "Av. Brasil, 146 - Vila Nova", 70, 15, 0, "colchões, produtos de higiene"),
                 ("ONG Mãos Solidárias", "Rua da fé, 109 - Jardim União", 20, 30, 1, "alimentos, água, produtos de higiene"),
                 ("Escola Estadual julia lopez", "Rua conego afonso, 397 - Parque Verde", 32, 42, 0, "colchões, água"),
-                ("Igreja Comunidaria", "Av. Central, 091 - Bairro Alto", 20   4, 1, "alimentos, produtos de higiene"),
+                ("Igreja Comunidaria", "Av. Central, 091 - Bairro Alto", 20, 4, 1, "alimentos, produtos de higiene"),
                 ("Igreja São bento", "Av. Esmeralda, 754- Vila Piauí", 20, 9, 1, "colchões, produtos de higiene")
             `);
     } else {
         console.log(`Banco pronto com ${listagemAbrigos.total} de abrigos.`);
-    }
-  
+    };
 
+    
   //Select - R do CRUD - READ
  
 
