@@ -1,114 +1,96 @@
+require('dotenv').config();
+
 const express = require('express');
-const {criarBanco} = require('./database');
 const cors = require('cors');
+const { criarBanco } = require('./database');
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
+// Middlewares
 app.use(cors());
-
 app.use(express.json());
 
-//Rota Principal-Raiz
+// Inicializa banco UMA VEZ
+let db;
 
+(async () => {
+    try {
+        db = await criarBanco();
+        console.log("✅ Banco conectado com sucesso");
+    } catch (error) {
+        console.error("❌ Erro ao conectar no banco:", error);
+    }
+})();
+
+// Rota teste
 app.get("/", (req, res) => {
-
-    res.send(`
-        <body>
-            <h1>🏠 Sistema de organização de Abrigos em Situações de Enchentes</h1>
-            <h2>Plataforma de agilização de alocação de desabrigados em cenários de desastre</h2>
-            <p>Endpoint que leva aos abrigos cadastrados: /abrigos</p>
-        </body>    
-        
-    `);
-
+    res.send("🚀 API de Abrigos rodando!");
 });
 
+// Listar abrigos
 app.get("/abrigos", async (req, res) => {
-
-    const db = await criarBanco();
-    const listagemAbrigos = await db.all(`SELECT * FROM abrigos`);
-    res.json(listagemAbrigos);
-
+    try {
+        const abrigos = await db.all(SELECT * FROM abrigos);
+        res.json(abrigos);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ erro: "Erro ao listar abrigos" });
+    }
 });
 
-//Rota Específica
-
-app.get("/abrigos/:id", async (req,res) => {
-    const {id} = req.params;
-    const db = await criarBanco();
-    const abrigoEspecifico = await db.all(`
-    
-        SELECT * FROM abrigos WHERE id = ?`,[id],
-    );
-    res.json(abrigoEspecifico);
-});
-
-//Rota Post - Novos Abrigos
-
-app.post("/abrigos", async (req,res) => {
-    const {
-        nomeAbrigo,
-        enderecoAbrigo,
-        capacidadeTotal,
-        vagasDisponiveis,
-        aceitaPet,
-        aceitaDoacoes,
-    } = req.body;
-
-    const db = await criarBanco();
-
-    await db.run(
-        `INSERT INTO abrigos(nomeAbrigo, enderecoAbrigo, capacidadeTotal, vagasDisponiveis, aceitaPet, aceitaDoacoes) VALUES (?,?,?,?,?,?)`,
-        [
+// Criar abrigo
+app.post("/abrigos", async (req, res) => {
+    try {
+        const {
             nomeAbrigo,
             enderecoAbrigo,
             capacidadeTotal,
             vagasDisponiveis,
             aceitaPet,
-            aceitaDoacoes,
-        ],
-    );
-    res.send(
-        `Abrigo novo registrado: ${nomeAbrigo} no endereço: ${enderecoAbrigo}`,
-    );
+            aceitaDoacoes
+        } = req.body;
 
+        if (!nomeAbrigo || !enderecoAbrigo) {
+            return res.status(400).json({ erro: "Dados obrigatórios faltando" });
+        }
+
+        const result = await db.run(
+            `INSERT INTO abrigos 
+            (nomeAbrigo, enderecoAbrigo, capacidadeTotal, vagasDisponiveis, aceitaPet, aceitaDoacoes)
+            VALUES (?, ?, ?, ?, ?, ?)`,
+            [
+                nomeAbrigo,
+                enderecoAbrigo,
+                capacidadeTotal,
+                vagasDisponiveis,
+                aceitaPet,
+                aceitaDoacoes
+            ]
+        );
+
+        res.status(201).json({ id: result.lastID });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ erro: "Erro ao criar abrigo" });
+    }
 });
 
-
-//Rota PUT - Atualização
-
-app.put("/abrigos/:id", async (req,res) =>{
-    const {id} = req.params;
-    const {vagasDisponiveis} = req.body;
-    const db = await criarBanco();
-
-    await db.run(
-        `
-        UPDATE abrigos
-        SET vagasDisponiveis = ?
-        WHERE id = ?`, [vagasDisponiveis, id],
-    );
-    res.send(`O abrigo de ${id} foi atualizado com sucesso!`);
-
-});
-
-//Rota DELETE - Rota de remoção
-
+// Deletar abrigo
 app.delete("/abrigos/:id", async (req, res) => {
-    const {id} = req.params;
-    const db = await criarBanco();
+    try {
+        const { id } = req.params;
 
-    await db.run(
-        `
-            DELETE FROM abrigos WHERE id = ?`, [id],
-    );
+        await db.run(DELETE FROM abrigos WHERE id = ?, [id]);
 
-    res.send(`O abrigo de ${id} foi removido com sucesso!`);
-    
+        res.json({ mensagem: "Abrigo removido com sucesso" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ erro: "Erro ao deletar abrigo" });
+    }
 });
 
-//Criando uma variável inteligente para a porta.
-const PORT = process.env.PORT || 3000;
+// Start server
 app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
+    console.log(🔥 Servidor rodando na porta ${PORT});
 });
