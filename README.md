@@ -6,17 +6,7 @@
 
 ## 🚀 Tecnologias Utilizadas
 
-<p align="left">
-    <img 
-        height="65"
-        src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/react.png"
-        title="React"
-    />
-    <img 
-        height="65"
-        src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/sass.png"
-        title="Sass"
-    />
+<p align="left">   
     <img
         height="65"
         src="https://raw.githubusercontent.com/marwin1991/profile-technology-icons/refs/heads/main/icons/express.png"
@@ -57,7 +47,6 @@ Siga os passos abaixo para rodar a aplicação localmente:
 
    ```
    npm install
-   npm install sass
    npm install express
    npm install sqlite3
    npm install sqlite
